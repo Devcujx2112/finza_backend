@@ -1,6 +1,7 @@
 package com.finza.backend.config;
 
 
+import com.finza.backend.constant.BaseMessage;
 import com.finza.backend.repository.Account_repository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -31,7 +32,7 @@ public class SercutiryConfig {
                         .password(account.getPassword())
                         .roles(account.getRole().name())
                         .build())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy user"));
+                .orElseThrow(() -> new RuntimeException(BaseMessage.ACCOUNT_NOT_FOUND));
     }
 
     @Bean
@@ -45,6 +46,7 @@ public class SercutiryConfig {
                         // Không cần token
                         .requestMatchers("/accounts/register").permitAll()
                         .requestMatchers("/accounts/login").permitAll()
+                        .requestMatchers("/refresh-token").permitAll()
                         // Còn lại phải có token
                         .anyRequest().authenticated()
                 ).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

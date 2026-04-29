@@ -5,6 +5,7 @@ import com.finza.backend.constant.BaseMessage;
 import com.finza.backend.constant.StatusCode;
 import com.finza.backend.dto.request.AccountRequest;
 import com.finza.backend.dto.request.LoginRequest;
+import com.finza.backend.dto.request.RefreshTokenRequest;
 import com.finza.backend.dto.response.AccountResponse;
 import com.finza.backend.dto.response.AuthResponse;
 import com.finza.backend.dto.response.BaseParam;
@@ -34,6 +35,15 @@ public class AccountController {
     @PostMapping("/login")
     public ResponseEntity<BaseResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request){
         AuthResponse data = accountService.login(request);
+        return ResponseEntity.ok(
+                BaseResponse.success(new BaseParam<>(data, StatusCode.SUCCESS, BaseMessage.LOGIN_SUCCESS))
+        );
+    }
+
+    @PostMapping("/refresh-token")
+    public ResponseEntity<BaseResponse<AuthResponse>> refreshToken(
+            @Valid @RequestBody RefreshTokenRequest request) {
+        AuthResponse data = accountService.refreshToken(request);
         return ResponseEntity.ok(
                 BaseResponse.success(new BaseParam<>(data, StatusCode.SUCCESS, BaseMessage.LOGIN_SUCCESS))
         );
