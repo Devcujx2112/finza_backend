@@ -9,19 +9,19 @@ public class BaseResponse<T>{
     private T data;
 
     // Khi có data
-    public static <T> BaseResponse<T> success(T data) {
+    public static <T> BaseResponse<T> success(BaseParam<T> param) {
         BaseResponse<T> response = new BaseResponse<>();
-        response.setStatusCode(200);
-        response.setMessage("Success");
-        response.setData(data);
+        response.setStatusCode(param.statusCode);
+        response.setMessage(param.message);
+        response.setData(param.data);
         return response;
     }
 
     // Khi không có data
-    public static <T> BaseResponse<T> success(String message) {
+    public static <T> BaseResponse<T> successNullData(BaseParam<T> param) {
         BaseResponse<T> response = new BaseResponse<>();
-        response.setStatusCode(200);
-        response.setMessage(message);
+        response.setStatusCode(param.statusCode);
+        response.setMessage(param.message);
         response.setData(null);
         return response;
     }

@@ -15,7 +15,8 @@ spring:
       hibernate:
         format_sql: true
 
-  jwt:
-    secret: finza_super_secret_key_2024_make_it_long
-    access-token-expiration: 86400000       # 1 ngày (ms)
-    refresh-token-expiration: 604800000   # 7 ngày (ms)
+
+jwt:
+  secret: finza_super_secret_key_2024_make_it_long
+  access-token-expiration: 86400000
+  refresh-token-expiration: 604800000

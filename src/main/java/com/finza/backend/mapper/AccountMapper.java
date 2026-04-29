@@ -4,7 +4,9 @@ import com.finza.backend.dto.request.AccountRequest;
 import com.finza.backend.dto.response.AccountResponse;
 import com.finza.backend.dto.request.AccountUpdateRequest;
 import com.finza.backend.entity.Account;
+import org.springframework.stereotype.Component;
 
+@Component
 public class AccountMapper {
 
     // Register
@@ -21,7 +23,7 @@ public class AccountMapper {
     // Tra ve data cho cliend
     public AccountResponse toResponse(Account account) {
         AccountResponse response = new AccountResponse();
-        response.setUser_id(account.getUser_id());
+        response.setUser_id(account.getUserId());
         response.setUserName(account.getUserName());
         response.setFullName(account.getFullName());
         response.setPhoneNumber(account.getPhoneNumber());

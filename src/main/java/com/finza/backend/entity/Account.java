@@ -13,7 +13,7 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     //Tu tang
     @Column(unique = true)
-    private Long user_id;
+    private Long userId;
 
     @Column(unique = true)
     //Khong duoc trung
