@@ -13,4 +13,8 @@ public class BaseMessage {
     public static final String NOT_NULL_PHONENUMBER = "Số điện thoại không được để trống";
     public static final String NOT_NULL_PASSWORD = "Mật khẩu không được để trống";
     public static final String LENGHT_PASWORD = "Mật khẩu phải có ít nhất 6 ký tự";
+    public static final String NOT_NULL_ACCESSTOKEN = "Refresh token không được để trống";
+    public static final String NOT_VALID_TOKEN = "Refresh token không hợp lệ";
+    public static final String TOKEN_RECALL = "Refresh token đã bị thu hồi";
+    public static final String TOKEN_EXPIRED = "Refresh token đã hết hạn, vui lòng đăng nhập lại";
 }

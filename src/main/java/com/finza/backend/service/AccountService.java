@@ -3,6 +3,7 @@ package com.finza.backend.service;
 import com.finza.backend.constant.BaseMessage;
 import com.finza.backend.dto.request.AccountRequest;
 import com.finza.backend.dto.request.LoginRequest;
+import com.finza.backend.dto.request.RefreshTokenRequest;
 import com.finza.backend.dto.response.AccountResponse;
 import com.finza.backend.dto.response.AuthResponse;
 import com.finza.backend.entity.Account;
@@ -61,6 +62,37 @@ public class AccountService {
         authentication.setRevoked(false);
         authenticationRepository.save(authentication);
 
+        return buildAuthResponse(account, accessToken, refreshToken);
+    }
+
+    public AuthResponse refreshToken(RefreshTokenRequest request) {
+        Authentication authentication = authenticationRepository
+                .findByRefreshToken(request.getRefreshToken())
+                .orElseThrow(() -> new RuntimeException(BaseMessage.NOT_VALID_TOKEN));
+
+        // 2. Kiểm tra token đã bị thu hồi chưa
+        if (authentication.isRevoked()) {
+            throw new RuntimeException(BaseMessage.TOKEN_RECALL);
+        }
+
+        // 3. Kiểm tra token còn hạn không
+        if (authentication.getExpiryDate().isBefore(Instant.now())) {
+            throw new RuntimeException(BaseMessage.TOKEN_EXPIRED);
+        }
+
+        // 4. Generate Access Token mới
+        String newAccessToken = jwtService.generateAccessToken(
+                authentication.getAccount().getUserName()
+        );
+
+        return buildAuthResponse(
+                authentication.getAccount(),
+                newAccessToken,
+                request.getRefreshToken()
+        );
+    }
+
+    private AuthResponse buildAuthResponse(Account account, String accessToken, String refreshToken) {
         AuthResponse response = new AuthResponse();
         response.setAccessToken(accessToken);
         response.setRefreshToken(refreshToken);
@@ -72,9 +104,9 @@ public class AccountService {
         return response;
     }
 
-    public AccountResponse getProfile(String userName){
+    public AccountResponse getProfile(String userName) {
         Account account = accountRepository.findByUserName(userName).orElseThrow(()
-        -> new RuntimeException(BaseMessage.ACCOUNT_NOT_FOUND));
+                -> new RuntimeException(BaseMessage.ACCOUNT_NOT_FOUND));
         return accountMapper.toResponse(account);
     }
 }
