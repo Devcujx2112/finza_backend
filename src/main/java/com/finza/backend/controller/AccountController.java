@@ -32,6 +32,14 @@ public class AccountController {
         );
     }
 
+    @PostMapping("/trial")
+    public ResponseEntity<BaseResponse<AuthResponse>> registerTrial(){
+        AuthResponse data = accountService.registerTrial();
+        return ResponseEntity.ok(
+                BaseResponse.success(new BaseParam<>(data, StatusCode.SUCCESS, BaseMessage.REGISTER_SUCCESS))
+        );
+    }
+
     @PostMapping("/login")
     public ResponseEntity<BaseResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request){
         AuthResponse data = accountService.login(request);

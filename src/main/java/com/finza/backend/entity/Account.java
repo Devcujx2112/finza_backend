@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Generated;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "accounts")
 @Data
@@ -18,6 +20,8 @@ public class Account {
     @Column(unique = true)
     //Khong duoc trung
     private String userName;
+
+    private LocalDate trialExpiredAt;
 
     @Enumerated(EnumType.STRING)
     private AccountTier accountTier;
