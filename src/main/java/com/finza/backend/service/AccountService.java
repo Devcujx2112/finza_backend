@@ -14,14 +14,20 @@ import com.finza.backend.mapper.AccountMapper;
 import com.finza.backend.repository.Account_repository;
 import com.finza.backend.repository.Authentication_repository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class AccountService {
+
+    @Value("${jwt.refresh-token-expiration}")
+    private long refreshTokenExpiration;
 
     private final Account_repository accountRepository;
     private final Authentication_repository authenticationRepository;
@@ -41,6 +47,31 @@ public class AccountService {
 
         accountRepository.save(account);
         return accountMapper.toResponse(account);
+    }
+
+    public AuthResponse registerTrial(){
+        String randomUserName = "guest_" + UUID.randomUUID().toString().substring(0, 6);
+        String randomPassword = UUID.randomUUID().toString();
+
+        Account account = new Account();
+        account.setUserName(randomUserName);
+        account.setPassword(passwordEncoder.encode(randomPassword));
+        account.setRole(AccountRole.CUSTOMER);
+        account.setAccountTier(AccountTier.TRIAL);
+        account.setTrialExpiredAt(LocalDate.now().plusDays(3));
+        accountRepository.save(account);
+
+        String accessToken = jwtService.generateAccessToken(randomUserName);
+        String refreshToken = jwtService.generateRefreshToken(randomUserName);
+
+        Authentication authentication = new Authentication();
+        authentication.setAccount(account);
+        authentication.setRefreshToken(refreshToken);
+        authentication.setExpiryDate(Instant.now().plusMillis(refreshTokenExpiration));
+        authentication.setRevoked(false);
+        authenticationRepository.save(authentication);
+
+        return buildAuthResponse(account, accessToken, refreshToken);
     }
 
     public AuthResponse login(LoginRequest loginRequest) {
