@@ -9,7 +9,7 @@ public class AuthResponse {
     private String accessToken;
     private String refreshToken;
     private Long user_id;
-    private String userName;
+    private String email;
     private String fullName;
     private AccountRole role;
     private AccountTier accountTier;

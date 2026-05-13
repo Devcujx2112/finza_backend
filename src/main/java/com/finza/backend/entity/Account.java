@@ -19,7 +19,7 @@ public class Account {
 
     @Column(unique = true)
     //Khong duoc trung
-    private String userName;
+    private String email;
 
     private LocalDate trialExpiredAt;
 

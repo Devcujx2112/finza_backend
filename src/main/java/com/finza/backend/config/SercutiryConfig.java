@@ -26,9 +26,9 @@ public class SercutiryConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> accountRepository.findByUserName(username)
+        return username -> accountRepository.findByEmail(username)
                 .map(account -> org.springframework.security.core.userdetails.User
-                        .withUsername(account.getUserName())
+                        .withUsername(account.getEmail())
                         .password(account.getPassword())
                         .roles(account.getRole().name())
                         .build())
