@@ -11,18 +11,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<BaseResponse<Void>> handleRuntimeException(MethodArgumentNotValidException ex) {
-
-        String message = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(FieldError::getDefaultMessage)
-                .findFirst()
-                .orElse("Dữ liệu không hợp lệ");
-
+    @ExceptionHandler(AppException.class)
+    public ResponseEntity<BaseResponse<Void>> handleAppException(AppException ex) {
         return ResponseEntity
-                .badRequest()
-                .body(BaseResponse.error(StatusCode.BAD_REQUEST, message));
+                .status(ex.getStatusCode())
+                .body(BaseResponse.error(ex.getStatusCode(), ex.getMessage()));
     }
 }

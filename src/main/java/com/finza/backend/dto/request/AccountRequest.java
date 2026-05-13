@@ -9,8 +9,8 @@ import lombok.Data;
 @Data
 public class AccountRequest {
 
-    @NotBlank(message = BaseMessage.NOT_NULL_USERNAME)
-    private String userName;
+    @NotBlank(message = BaseMessage.NOT_NULL_EMAIL)
+    private String email;
 
     @NotBlank(message = BaseMessage.NOT_NULL_FULLNAME)
     private String fullName;

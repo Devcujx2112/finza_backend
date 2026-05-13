@@ -12,7 +12,7 @@ public class AccountMapper {
     // Register
     public Account toEntity(AccountRequest request) {
         Account account = new Account();
-        account.setUserName(request.getUserName());
+        account.setEmail(request.getEmail());
         account.setFullName(request.getFullName());
         account.setPhoneNumber(request.getPhoneNumber());
         account.setPassword(request.getPassword());
@@ -24,7 +24,7 @@ public class AccountMapper {
     public AccountResponse toResponse(Account account) {
         AccountResponse response = new AccountResponse();
         response.setUser_id(account.getUserId());
-        response.setUserName(account.getUserName());
+        response.setEmail(account.getEmail());
         response.setFullName(account.getFullName());
         response.setPhoneNumber(account.getPhoneNumber());
         response.setDateOfBirth(account.getDateOfBirth());

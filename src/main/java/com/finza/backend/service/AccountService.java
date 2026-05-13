@@ -1,6 +1,7 @@
 package com.finza.backend.service;
 
 import com.finza.backend.constant.BaseMessage;
+import com.finza.backend.constant.StatusCode;
 import com.finza.backend.dto.request.AccountRequest;
 import com.finza.backend.dto.request.LoginRequest;
 import com.finza.backend.dto.request.RefreshTokenRequest;
@@ -10,6 +11,7 @@ import com.finza.backend.entity.Account;
 import com.finza.backend.entity.AccountRole;
 import com.finza.backend.entity.AccountTier;
 import com.finza.backend.entity.Authentication;
+import com.finza.backend.exception.AppException;
 import com.finza.backend.mapper.AccountMapper;
 import com.finza.backend.repository.Account_repository;
 import com.finza.backend.repository.Authentication_repository;
@@ -36,8 +38,8 @@ public class AccountService {
     private final PasswordEncoder passwordEncoder;
 
     public AccountResponse register(AccountRequest request) {
-        if (accountRepository.existsByUserName(request.getUserName())) {
-            throw new RuntimeException(BaseMessage.USERNAME_EXISTED);
+        if (accountRepository.existsByEmail(request.getEmail())) {
+            throw new AppException(StatusCode.EmailAlreadyExists, BaseMessage.EMAIL_EXISTED);
         }
 
         Account account = accountMapper.toEntity(request);
@@ -50,19 +52,19 @@ public class AccountService {
     }
 
     public AuthResponse registerTrial(){
-        String randomUserName = "guest_" + UUID.randomUUID().toString().substring(0, 6);
+        String randomEmail = "guest_" + UUID.randomUUID().toString().substring(0, 6);
         String randomPassword = UUID.randomUUID().toString();
 
         Account account = new Account();
-        account.setUserName(randomUserName);
+        account.setEmail(randomEmail);
         account.setPassword(passwordEncoder.encode(randomPassword));
         account.setRole(AccountRole.CUSTOMER);
         account.setAccountTier(AccountTier.TRIAL);
         account.setTrialExpiredAt(LocalDate.now().plusDays(3));
         accountRepository.save(account);
 
-        String accessToken = jwtService.generateAccessToken(randomUserName);
-        String refreshToken = jwtService.generateRefreshToken(randomUserName);
+        String accessToken = jwtService.generateAccessToken(randomEmail);
+        String refreshToken = jwtService.generateRefreshToken(randomEmail);
 
         Authentication authentication = new Authentication();
         authentication.setAccount(account);
@@ -75,14 +77,14 @@ public class AccountService {
     }
 
     public AuthResponse login(LoginRequest loginRequest) {
-        Account account = accountRepository.findByUserName(loginRequest.getUserName()).orElseThrow(() ->
+        Account account = accountRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() ->
                 new RuntimeException(BaseMessage.ACCOUNT_NOT_FOUND));
         if (!passwordEncoder.matches(loginRequest.getPassword(), account.getPassword())) {
             throw new RuntimeException(BaseMessage.WRONG_PASSWORD);
         }
 
-        String accessToken = jwtService.generateAccessToken(account.getUserName());
-        String refreshToken = jwtService.generateRefreshToken(account.getUserName());
+        String accessToken = jwtService.generateAccessToken(account.getEmail());
+        String refreshToken = jwtService.generateRefreshToken(account.getEmail());
 
         Authentication authentication = authenticationRepository.findByAccount_UserId(account.getUserId()).
                 orElse(new Authentication());
@@ -113,7 +115,7 @@ public class AccountService {
 
         // 4. Generate Access Token mới
         String newAccessToken = jwtService.generateAccessToken(
-                authentication.getAccount().getUserName()
+                authentication.getAccount().getEmail()
         );
 
         return buildAuthResponse(
@@ -128,7 +130,7 @@ public class AccountService {
         response.setAccessToken(accessToken);
         response.setRefreshToken(refreshToken);
         response.setUser_id(account.getUserId());
-        response.setUserName(account.getUserName());
+        response.setEmail(account.getEmail());
         response.setFullName(account.getFullName());
         response.setRole(account.getRole());
         response.setAccountTier(account.getAccountTier());
@@ -136,7 +138,7 @@ public class AccountService {
     }
 
     public AccountResponse getProfile(String userName) {
-        Account account = accountRepository.findByUserName(userName).orElseThrow(()
+        Account account = accountRepository.findByEmail(userName).orElseThrow(()
                 -> new RuntimeException(BaseMessage.ACCOUNT_NOT_FOUND));
         return accountMapper.toResponse(account);
     }
