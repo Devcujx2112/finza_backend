@@ -8,5 +8,5 @@ import lombok.Data;
 public class BaseParam<T> {
     public T data;
     public int statusCode;
-    public String message;
+    public String statusMessage;
 }

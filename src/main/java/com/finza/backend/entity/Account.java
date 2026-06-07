@@ -21,6 +21,17 @@ public class Account {
     //Khong duoc trung
     private String email;
 
+    @Column(unique = true)
+    private String googleId;
+
+    @Column(unique = true)
+    private String facebookId;
+
+    @Column(unique = true)
+    private String appleId;
+
+    private SocialType provider;
+
     private LocalDate trialExpiredAt;
 
     @Enumerated(EnumType.STRING)
@@ -38,4 +49,8 @@ public class Account {
     private String dateOfBirth;
 
     private String urlAvatar;
+
+    private boolean loginWithBioMetric;
+
+    private String created_at;
 }

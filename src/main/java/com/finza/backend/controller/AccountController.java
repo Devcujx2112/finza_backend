@@ -6,6 +6,7 @@ import com.finza.backend.constant.StatusCode;
 import com.finza.backend.dto.request.AccountRequest;
 import com.finza.backend.dto.request.LoginRequest;
 import com.finza.backend.dto.request.RefreshTokenRequest;
+import com.finza.backend.dto.request.SocialLogin;
 import com.finza.backend.dto.response.AccountResponse;
 import com.finza.backend.dto.response.AuthResponse;
 import com.finza.backend.dto.response.BaseParam;
@@ -29,6 +30,14 @@ public class AccountController {
         AccountResponse data = accountService.register(request);
         return ResponseEntity.ok(
                 BaseResponse.success(new BaseParam<>(data, StatusCode.SUCCESS, BaseMessage.REGISTER_SUCCESS))
+        );
+    }
+
+    @GetMapping("/accounts/login-social")
+    public ResponseEntity<BaseResponse<AuthResponse>> loginSocial(@Valid @RequestBody SocialLogin request){
+        AuthResponse data = accountService.loginWithSocial(request);
+        return ResponseEntity.ok(
+                BaseResponse.success(new BaseParam<>(data, StatusCode.SUCCESS, BaseMessage.LOGIN_SOCIAL_SUCCESS))
         );
     }
 

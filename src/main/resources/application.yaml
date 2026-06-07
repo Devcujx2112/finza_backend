@@ -15,7 +15,10 @@ spring:
       hibernate:
         format_sql: true
 
-
+google:
+  client-ids:
+    - 726909693389-ptb21juse5ro2g2ado2t2ctirf11nrv7.apps.googleusercontent.com  # Android/Web
+    - 726909693389-1jstgh6gg32t0sh3vt2jvm5bfmv53pi1.apps.googleusercontent.com  # iOS
 jwt:
   secret: finza_super_secret_key_2024_make_it_long
   access-token-expiration: 86400000

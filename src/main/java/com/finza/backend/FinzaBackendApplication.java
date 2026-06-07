@@ -9,5 +9,4 @@ public class FinzaBackendApplication {
     public static void main(String[] args) {
         SpringApplication.run(FinzaBackendApplication.class, args);
     }
-
 }

@@ -17,5 +17,9 @@ public class BaseMessage {
     public static final String NOT_VALID_TOKEN = "Refresh token không hợp lệ";
     public static final String TOKEN_RECALL = "Refresh token đã bị thu hồi";
     public static final String TOKEN_EXPIRED = "Refresh token đã hết hạn, vui lòng đăng nhập lại";
-//    public static final String EMAIL
+    public static final String SOCIAL_ACCOUNT_NO_PASSWORD =
+            "Email này đã đăng ký bằng Google, vui lòng đăng nhập bằng Google";
+    public static final String INVALID_ID_TOKEN = "Id provider không được để trống";
+    public static final String UNSUPPORTED_PROVIDER = "Không hỗ trợ cách đăng nhập này";
+    public static final String LOGIN_SOCIAL_SUCCESS = "Đăng nhập bằng social thành công";
 }
