@@ -49,7 +49,7 @@ public class JwtService {
     }
 
     // Lấy userName từ token
-    public String extractUserName(String token) {
+    public String extractEmail(String token) {
         return extractClaims(token).getSubject();
     }
 

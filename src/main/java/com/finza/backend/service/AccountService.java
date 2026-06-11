@@ -2,13 +2,9 @@ package com.finza.backend.service;
 
 import com.finza.backend.constant.BaseMessage;
 import com.finza.backend.constant.StatusCode;
-import com.finza.backend.dto.request.AccountRequest;
-import com.finza.backend.dto.request.LoginRequest;
-import com.finza.backend.dto.request.RefreshTokenRequest;
-import com.finza.backend.dto.request.SocialLogin;
+import com.finza.backend.dto.request.*;
 import com.finza.backend.dto.response.AccountResponse;
 import com.finza.backend.dto.response.AuthResponse;
-import com.finza.backend.dto.response.SocialResponse;
 import com.finza.backend.entity.*;
 import com.finza.backend.exception.AppException;
 import com.finza.backend.mapper.AccountMapper;
@@ -23,14 +19,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.security.AuthProvider;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-
-import static com.finza.backend.entity.SocialType.GOOGLE;
 
 @Service
 @RequiredArgsConstructor
@@ -83,14 +75,14 @@ public class AccountService {
 
     public AuthResponse login(LoginRequest loginRequest) {
         Account account = accountRepository.findByEmail(loginRequest.getEmail()).orElseThrow(() ->
-                new RuntimeException(BaseMessage.ACCOUNT_NOT_FOUND));
+                new AppException(StatusCode.EmailNotExists, BaseMessage.ACCOUNT_NOT_FOUND));
 
         if (account.getPassword() == null) {
-            throw new AppException(StatusCode.BAD_REQUEST, BaseMessage.SOCIAL_ACCOUNT_NO_PASSWORD);
+            throw new AppException(StatusCode.PasswordNotNull, BaseMessage.SOCIAL_ACCOUNT_NO_PASSWORD);
         }
 
         if (!passwordEncoder.matches(loginRequest.getPassword(), account.getPassword())) {
-            throw new RuntimeException(BaseMessage.WRONG_PASSWORD);
+            throw new AppException(StatusCode.PasswordNotCorrect, BaseMessage.WRONG_PASSWORD);
         }
 
         String accessToken = jwtService.generateAccessToken(account.getEmail());
@@ -102,11 +94,11 @@ public class AccountService {
 
     public AuthResponse loginWithSocial(SocialLogin loginRequest) {
         return switch (loginRequest.getProvider()) {
-            case GOOGLE   -> handleGoogleLogin(loginRequest);
+            case GOOGLE -> handleGoogleLogin(loginRequest);
             case FACEBOOK -> handleFacebookLogin(loginRequest);
-            case APPLE    -> handleAppleLogin(loginRequest);
+            case APPLE -> handleAppleLogin(loginRequest);
             default -> throw new AppException(
-                    StatusCode.BAD_REQUEST,
+                    StatusCode.UNSUPPORTED_PROVIDER,
                     BaseMessage.UNSUPPORTED_PROVIDER
             );
         };
@@ -153,9 +145,9 @@ public class AccountService {
                 });
 
         switch (socialType) {
-            case GOOGLE   -> account.setGoogleId(providerId);
+            case GOOGLE -> account.setGoogleId(providerId);
             case FACEBOOK -> account.setFacebookId(providerId);
-            case APPLE    -> account.setAppleId(providerId);
+            case APPLE -> account.setAppleId(providerId);
         }
         accountRepository.save(account);
 
@@ -193,16 +185,19 @@ public class AccountService {
     }
 
     public AuthResponse refreshToken(RefreshTokenRequest request) {
+        if (request == null) {
+            throw new AppException(StatusCode.TOKEN_EXPIRED, BaseMessage.NOT_VALID_TOKEN);
+        }
         Authentication authentication = authenticationRepository
                 .findByRefreshToken(request.getRefreshToken())
-                .orElseThrow(() -> new RuntimeException(BaseMessage.NOT_VALID_TOKEN));
+                .orElseThrow(() -> new AppException(StatusCode.UNAUTHORIZED, BaseMessage.NOT_VALID_TOKEN));
 
         if (authentication.isRevoked()) {
-            throw new RuntimeException(BaseMessage.TOKEN_RECALL);
+            throw new AppException(StatusCode.UNAUTHORIZED, BaseMessage.TOKEN_RECALL);
         }
 
         if (authentication.getExpiryDate().isBefore(Instant.now())) {
-            throw new RuntimeException(BaseMessage.TOKEN_EXPIRED);
+            throw new AppException(StatusCode.TOKEN_EXPIRED, BaseMessage.TOKEN_EXPIRED);
         }
 
         String newAccessToken = jwtService.generateAccessToken(
@@ -216,10 +211,19 @@ public class AccountService {
         );
     }
 
-    public AccountResponse getProfile(String userName) {
-        Account account = accountRepository.findByEmail(userName).orElseThrow(()
-                -> new RuntimeException(BaseMessage.ACCOUNT_NOT_FOUND));
+    public AccountResponse getProfile(String email) {
+        Account account = accountRepository.findByEmail(email).orElseThrow(()
+                -> new AppException(StatusCode.EmailNotExists, BaseMessage.ACCOUNT_NOT_FOUND));
         return accountMapper.toResponse(account);
+    }
+
+    public void updateProfile(AccountUpdateRequest data, String email) {
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new AppException(StatusCode.NOT_FOUND, BaseMessage.ACCOUNT_NOT_FOUND));
+
+        accountMapper.updateEntity(account, data);
+        accountRepository.save(account);
+        accountMapper.toResponse(account);
     }
 
     private void saveRefreshToken(Account account, String refreshToken) {

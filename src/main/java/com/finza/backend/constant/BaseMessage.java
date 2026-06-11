@@ -22,4 +22,6 @@ public class BaseMessage {
     public static final String INVALID_ID_TOKEN = "Id provider không được để trống";
     public static final String UNSUPPORTED_PROVIDER = "Không hỗ trợ cách đăng nhập này";
     public static final String LOGIN_SOCIAL_SUCCESS = "Đăng nhập bằng social thành công";
+    public static final String INVALID_PROVIDER = "Provider không được để trống";
+    public static final String SUCCESS = "Thành công";
 }
