@@ -30,6 +30,7 @@ public class Account {
     @Column(unique = true)
     private String appleId;
 
+    @Enumerated(EnumType.STRING)
     private SocialType provider;
 
     private LocalDate trialExpiredAt;
@@ -50,6 +51,7 @@ public class Account {
 
     private String urlAvatar;
 
+    @Column(nullable = false)
     private boolean loginWithBioMetric;
 
     private String created_at;

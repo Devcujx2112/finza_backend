@@ -30,7 +30,7 @@ public class AccountController {
         );
     }
 
-    @GetMapping("/login-social")
+    @PostMapping("/login-social")
     public ResponseEntity<BaseResponse<AuthResponse>> loginSocial(@Valid @RequestBody SocialLogin request) {
         AuthResponse data = accountService.loginWithSocial(request);
         return ResponseEntity.ok(
@@ -71,7 +71,7 @@ public class AccountController {
                 BaseResponse.success(new BaseParam<>(data, StatusCode.SUCCESS, BaseMessage.GET_PROFILE_SUCCESS)));
     }
 
-    @PutMapping("/update-profile")
+    @PutMapping("/updateProfile")
     public ResponseEntity<BaseResponse<AccountResponse>> updateProfile(@RequestBody AccountUpdateRequest data, @RequestHeader("Authorization") String token) {
         String email = jwtService.extractEmail(token.replace("Bearer ", ""));
         accountService.updateProfile(data, email);

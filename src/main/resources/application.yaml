@@ -14,6 +14,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
+facebook:
+  app-id: 1617766262623679
+  app-secret: 33da5979da56b871ebebd813389fe956
 
 google:
   client-ids:

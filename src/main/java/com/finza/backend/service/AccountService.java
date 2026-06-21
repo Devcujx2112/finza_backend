@@ -1,5 +1,6 @@
 package com.finza.backend.service;
 
+import com.finza.backend.config.GoogleConfig;
 import com.finza.backend.constant.BaseMessage;
 import com.finza.backend.constant.StatusCode;
 import com.finza.backend.dto.request.*;
@@ -14,6 +15,10 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
+import com.restfb.DefaultFacebookClient;
+import com.restfb.FacebookClient;
+import com.restfb.Parameter;
+import com.restfb.Version;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,8 +36,13 @@ public class AccountService {
     @Value("${jwt.refresh-token-expiration}")
     private long refreshTokenExpiration;
 
-    @Value("${google.client-id}")
-    private List<String> googleClientIds;
+    private final GoogleConfig googleConfig;
+
+    @Value("${facebook.app-id}")
+    private String facebookAppId;
+
+    @Value("${facebook.app-secret}")
+    private String facebookAppSecret;
 
     private final Account_repository accountRepository;
     private final Authentication_repository authenticationRepository;
@@ -105,11 +115,79 @@ public class AccountService {
     }
 
     private AuthResponse handleFacebookLogin(SocialLogin request) {
-        throw new AppException(StatusCode.BAD_REQUEST, BaseMessage.UNSUPPORTED_PROVIDER);
+        try {
+            // Verify token với Facebook Graph API
+            FacebookClient facebookClient = new DefaultFacebookClient(
+                    request.getAccessToken(),
+                    Version.LATEST
+            );
+
+            com.restfb.types.User fbUser = facebookClient.fetchObject(
+                    "me",
+                    com.restfb.types.User.class,
+                    Parameter.with("fields", "id,name,email,picture")
+            );
+
+            if (fbUser == null) {
+                throw new AppException(StatusCode.UNAUTHORIZED, BaseMessage.INVALID_ID_TOKEN);
+            }
+
+            String email = fbUser.getEmail();
+            String providerId = fbUser.getId();
+            String name = fbUser.getName();
+            String avatar = fbUser.getPicture() != null ? fbUser.getPicture().getUrl() : null;
+
+            if (email == null) {
+                email = "fb_" + providerId + "@facebook.com";
+            }
+
+            return createAndAuth(email, providerId, name, avatar, SocialType.FACEBOOK);
+
+        } catch (AppException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new AppException(StatusCode.UNAUTHORIZED, BaseMessage.INVALID_ID_TOKEN);
+        }
     }
 
     private AuthResponse handleAppleLogin(SocialLogin request) {
-        throw new AppException(StatusCode.BAD_REQUEST, BaseMessage.UNSUPPORTED_PROVIDER);
+        try {
+            // Decode JWT từ Apple (không cần verify signature ở đây
+            // vì Firebase đã verify trước khi gửi lên BE)
+            String[] parts = request.getIdToken().split("\\.");
+            if (parts.length != 3) {
+                throw new AppException(StatusCode.UNAUTHORIZED, BaseMessage.INVALID_ID_TOKEN);
+            }
+
+            // Decode payload
+            String payload = new String(
+                    java.util.Base64.getUrlDecoder().decode(parts[1])
+            );
+
+            // Parse JSON
+            com.fasterxml.jackson.databind.ObjectMapper mapper =
+                    new com.fasterxml.jackson.databind.ObjectMapper();
+            com.fasterxml.jackson.databind.JsonNode node =
+                    mapper.readTree(payload);
+
+            String providerId = node.get("sub").asText();
+            String email = node.has("email") ? node.get("email").asText() : null;
+
+            // Apple không có name và avatar
+            // Name chỉ có lần đầu tiên và do mobile gửi lên
+            String name = request.getFullName();    // Thêm field này vào SocialLogin
+
+            if (email == null) {
+                email = "apple_" + providerId + "@privaterelay.appleid.com";
+            }
+
+            return createAndAuth(email, providerId, name, null, SocialType.APPLE);
+
+        } catch (AppException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new AppException(StatusCode.UNAUTHORIZED, BaseMessage.INVALID_ID_TOKEN);
+        }
     }
 
     private AuthResponse handleGoogleLogin(SocialLogin request) {
@@ -162,10 +240,10 @@ public class AccountService {
         NetHttpTransport transport = new NetHttpTransport();
         GsonFactory jsonFactory = GsonFactory.getDefaultInstance();
 
-        GoogleIdTokenVerifier verifier =
-                new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
-                        .setAudience(googleClientIds)
-                        .build();
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier
+                .Builder(new NetHttpTransport(), GsonFactory.getDefaultInstance())
+                .setAudience(googleConfig.getClientIds())
+                .build();
 
         try {
 
