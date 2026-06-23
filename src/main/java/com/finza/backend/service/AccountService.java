@@ -205,7 +205,7 @@ public class AccountService {
     private AuthResponse createAndAuth(String email, String providerId,
                                        String name, String avatar,
                                        SocialType socialType) {
-
+        String randomPassword = UUID.randomUUID().toString();
         Account account = accountRepository.findByEmail(email)
                 .orElseGet(() -> {
                     Account newAccount = new Account();
@@ -214,7 +214,7 @@ public class AccountService {
                     newAccount.setUrlAvatar(avatar);
                     newAccount.setRole(AccountRole.CUSTOMER);
                     newAccount.setAccountTier(AccountTier.Free);
-                    newAccount.setPassword(null);
+                    newAccount.setPassword(passwordEncoder.encode(randomPassword));
                     newAccount.setFullName("temp");
 
                     Account saved = accountRepository.save(newAccount);

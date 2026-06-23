@@ -47,6 +47,7 @@ public class SecurityConfig {
                         .requestMatchers("/accounts/register").permitAll()
                         .requestMatchers("/accounts/login").permitAll()
                         .requestMatchers("/refresh-token").permitAll()
+                        .requestMatchers("/accounts/login-social").permitAll()
                         // Còn lại phải có token
                         .anyRequest().authenticated()
                 ).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
