@@ -43,6 +43,7 @@ public class Account {
 
     private String fullName;
 
+    @Column(unique = true)
     private String phoneNumber;
 
     private String password;

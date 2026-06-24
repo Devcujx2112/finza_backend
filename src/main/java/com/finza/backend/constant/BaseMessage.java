@@ -3,6 +3,7 @@ package com.finza.backend.constant;
 public class BaseMessage {
     // Account
     public static final String EMAIL_EXISTED = "Email đã tồn tại";
+    public static final String PHONE_EXISTED = "Số điện thoại này đã được đăng kí trên tài khoản khác";
     public static final String ACCOUNT_NOT_FOUND = "Không tìm thấy tài khoản";
     public static final String WRONG_PASSWORD = "Sai mật khẩu";
     public static final String REGISTER_SUCCESS = "Đăng ký thành công";

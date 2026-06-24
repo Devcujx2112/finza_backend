@@ -14,4 +14,5 @@ public class StatusCode {
     public static final int PasswordNotCorrect = 1002;
     public static final int UNSUPPORTED_PROVIDER = 1003;
     public static final int TOKEN_EXPIRED = 1004;
+    public static final int PhoneAlreadyExists = 410;
 }

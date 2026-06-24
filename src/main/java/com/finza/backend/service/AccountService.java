@@ -54,6 +54,9 @@ public class AccountService {
         if (accountRepository.existsByEmail(request.getEmail())) {
             throw new AppException(StatusCode.EmailAlreadyExists, BaseMessage.EMAIL_EXISTED);
         }
+        if (accountRepository.existsByPhoneNumber(request.getPhoneNumber())) {
+            throw new AppException(StatusCode.PhoneAlreadyExists, BaseMessage.PHONE_EXISTED);
+        }
 
         Account account = accountMapper.toEntity(request);
         account.setPassword(passwordEncoder.encode((request.getPassword())));
