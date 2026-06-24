@@ -219,7 +219,7 @@ public class AccountService {
                     newAccount.setAccountTier(AccountTier.Free);
                     newAccount.setPassword(passwordEncoder.encode(randomPassword));
                     newAccount.setFullName("temp");
-
+                    newAccount.setLoginWithBioMetric(false);
                     Account saved = accountRepository.save(newAccount);
                     saved.setFullName(name != null ? name : "Người dùng " + saved.getUserId());
                     return accountRepository.save(saved);
