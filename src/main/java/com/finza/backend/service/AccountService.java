@@ -1,5 +1,7 @@
 package com.finza.backend.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.finza.backend.config.GoogleConfig;
 import com.finza.backend.constant.BaseMessage;
 import com.finza.backend.constant.StatusCode;
@@ -19,13 +21,19 @@ import com.restfb.DefaultFacebookClient;
 import com.restfb.FacebookClient;
 import com.restfb.Parameter;
 import com.restfb.Version;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,6 +45,9 @@ public class AccountService {
     private long refreshTokenExpiration;
 
     private final GoogleConfig googleConfig;
+
+    @Autowired
+    private JwtDecoder facebookJwtDecoder;
 
     @Value("${facebook.app-id}")
     private String facebookAppId;
@@ -118,38 +129,43 @@ public class AccountService {
     }
 
     private AuthResponse handleFacebookLogin(SocialLogin request) {
+
         try {
-            // Verify token với Facebook Graph API
-            FacebookClient facebookClient = new DefaultFacebookClient(
-                    request.getAccessToken(),
-                    Version.LATEST
-            );
 
-            com.restfb.types.User fbUser = facebookClient.fetchObject(
-                    "me",
-                    com.restfb.types.User.class,
-                    Parameter.with("fields", "id,name,email,picture")
-            );
+            Jwt jwt = facebookJwtDecoder.decode(request.getAccessToken());
 
-            if (fbUser == null) {
-                throw new AppException(StatusCode.UNAUTHORIZED, BaseMessage.INVALID_ID_TOKEN);
+            if (!facebookAppId.equals(jwt.getAudience().get(0))) {
+                throw new AppException(
+                        StatusCode.UNAUTHORIZED,
+                        BaseMessage.INVALID_ID_TOKEN
+                );
             }
 
-            String email = fbUser.getEmail();
-            String providerId = fbUser.getId();
-            String name = fbUser.getName();
-            String avatar = fbUser.getPicture() != null ? fbUser.getPicture().getUrl() : null;
+            String providerId = jwt.getSubject();
+
+            String email = jwt.getClaimAsString("email");
+
+            String name = jwt.getClaimAsString("name");
+
+            String avatar = jwt.getClaimAsString("picture");
 
             if (email == null) {
                 email = "fb_" + providerId + "@facebook.com";
             }
 
-            return createAndAuth(email, providerId, name, avatar, SocialType.FACEBOOK);
+            return createAndAuth(
+                    email,
+                    providerId,
+                    name,
+                    avatar,
+                    SocialType.FACEBOOK
+            );
 
-        } catch (AppException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new AppException(StatusCode.UNAUTHORIZED, BaseMessage.INVALID_ID_TOKEN);
+        } catch (JwtException e) {
+            throw new AppException(
+                    StatusCode.UNAUTHORIZED,
+                    BaseMessage.INVALID_ID_TOKEN
+            );
         }
     }
 
