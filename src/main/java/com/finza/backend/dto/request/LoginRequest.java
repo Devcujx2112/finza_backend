@@ -8,9 +8,6 @@ import lombok.Data;
 
 @Data
 public class LoginRequest {
-    @NotBlank(message = BaseMessage.NOT_NULL_USERNAME)
-    private String userName;
-    @NotBlank(message = BaseMessage.NOT_NULL_PASSWORD)
-    @Size(min = StatusCode.SIZE_PASSWORD, message = BaseMessage.LENGHT_PASWORD)
+    private String email;
     private String password;
 }

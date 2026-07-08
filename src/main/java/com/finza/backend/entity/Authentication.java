@@ -20,6 +20,9 @@ public class Authentication {
     @Column(nullable = false, unique = true)
     private String refreshToken;
 
+    @Column(unique = true)
+    private String biometricToken;
+
     @Column(nullable = false)
     private Instant expiryDate;
 

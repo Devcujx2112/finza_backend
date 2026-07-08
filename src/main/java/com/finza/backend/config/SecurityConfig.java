@@ -13,22 +13,24 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class SercutiryConfig {
+public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthFilter;
     private final Account_repository accountRepository;
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> accountRepository.findByUserName(username)
+        return username -> accountRepository.findByEmail(username)
                 .map(account -> org.springframework.security.core.userdetails.User
-                        .withUsername(account.getUserName())
+                        .withUsername(account.getEmail())
                         .password(account.getPassword())
                         .roles(account.getRole().name())
                         .build())
@@ -47,6 +49,7 @@ public class SercutiryConfig {
                         .requestMatchers("/accounts/register").permitAll()
                         .requestMatchers("/accounts/login").permitAll()
                         .requestMatchers("/refresh-token").permitAll()
+                        .requestMatchers("/accounts/login-social").permitAll()
                         // Còn lại phải có token
                         .anyRequest().authenticated()
                 ).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
@@ -56,5 +59,12 @@ public class SercutiryConfig {
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    JwtDecoder facebookJwtDecoder() {
+        return NimbusJwtDecoder
+                .withJwkSetUri("https://www.facebook.com/.well-known/oauth/openid/jwks/")
+                .build();
     }
 }

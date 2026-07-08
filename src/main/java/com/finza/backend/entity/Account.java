@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.Generated;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(name = "accounts")
 @Data
@@ -17,7 +19,21 @@ public class Account {
 
     @Column(unique = true)
     //Khong duoc trung
-    private String userName;
+    private String email;
+
+    @Column(unique = true)
+    private String googleId;
+
+    @Column(unique = true)
+    private String facebookId;
+
+    @Column(unique = true)
+    private String appleId;
+
+    @Enumerated(EnumType.STRING)
+    private SocialType provider;
+
+    private LocalDate trialExpiredAt;
 
     @Enumerated(EnumType.STRING)
     private AccountTier accountTier;
@@ -27,6 +43,7 @@ public class Account {
 
     private String fullName;
 
+    @Column(unique = true)
     private String phoneNumber;
 
     private String password;
@@ -34,4 +51,9 @@ public class Account {
     private String dateOfBirth;
 
     private String urlAvatar;
+
+    @Column(nullable = false)
+    private boolean loginWithBioMetric;
+
+    private String created_at;
 }

@@ -12,7 +12,7 @@ public class BaseResponse<T>{
     public static <T> BaseResponse<T> success(BaseParam<T> param) {
         BaseResponse<T> response = new BaseResponse<>();
         response.setStatusCode(param.statusCode);
-        response.setMessage(param.message);
+        response.setMessage(param.statusMessage);
         response.setData(param.data);
         return response;
     }
@@ -21,7 +21,7 @@ public class BaseResponse<T>{
     public static <T> BaseResponse<T> successNullData(BaseParam<T> param) {
         BaseResponse<T> response = new BaseResponse<>();
         response.setStatusCode(param.statusCode);
-        response.setMessage(param.message);
+        response.setMessage(param.statusMessage);
         response.setData(null);
         return response;
     }

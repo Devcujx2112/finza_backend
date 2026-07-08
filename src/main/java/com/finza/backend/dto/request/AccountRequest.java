@@ -8,18 +8,12 @@ import lombok.Data;
 
 @Data
 public class AccountRequest {
+    private String email;
 
-    @NotBlank(message = BaseMessage.NOT_NULL_USERNAME)
-    private String userName;
-
-    @NotBlank(message = BaseMessage.NOT_NULL_FULLNAME)
     private String fullName;
 
-    @NotBlank(message = BaseMessage.NOT_NULL_PHONENUMBER)
     private String phoneNumber;
 
-    @NotBlank(message = BaseMessage.NOT_NULL_PASSWORD)
-    @Size(min = StatusCode.SIZE_PASSWORD, message = BaseMessage.LENGHT_PASWORD)
     private String password;
 
     private String dateOfBirth;
