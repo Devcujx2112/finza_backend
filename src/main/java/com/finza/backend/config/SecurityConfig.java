@@ -50,6 +50,7 @@ public class SecurityConfig {
                         .requestMatchers("/accounts/login").permitAll()
                         .requestMatchers("/refresh-token").permitAll()
                         .requestMatchers("/accounts/login-social").permitAll()
+                        .requestMatchers("/accounts/trial").permitAll()
                         // Còn lại phải có token
                         .anyRequest().authenticated()
                 ).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

@@ -1,7 +1,5 @@
 package com.finza.backend.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.finza.backend.config.GoogleConfig;
 import com.finza.backend.constant.BaseMessage;
 import com.finza.backend.constant.StatusCode;
@@ -17,10 +15,6 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
-import com.restfb.DefaultFacebookClient;
-import com.restfb.FacebookClient;
-import com.restfb.Parameter;
-import com.restfb.Version;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,11 +24,8 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Base64;
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -72,19 +63,29 @@ public class AccountService {
         Account account = accountMapper.toEntity(request);
         account.setPassword(passwordEncoder.encode((request.getPassword())));
         account.setRole(AccountRole.CUSTOMER);
-        account.setAccountTier(AccountTier.Free);
+        account.setAccountTier(AccountTier.FREE);
 
         accountRepository.save(account);
         return accountMapper.toResponse(account);
     }
 
     public AuthResponse registerTrial() {
-        String randomEmail = "guest_" + UUID.randomUUID().toString().substring(0, 6);
+        String randomEmail = "guest_" + UUID.randomUUID().toString().substring(0, 12);
         String randomPassword = UUID.randomUUID().toString();
 
         Account account = new Account();
         account.setEmail(randomEmail);
         account.setPassword(passwordEncoder.encode(randomPassword));
+        account.setGoogleId(null);
+        account.setFacebookId(null);
+        account.setAppleId(null);
+        account.setProvider(null);
+        account.setFullName(randomEmail);
+        account.setPhoneNumber(null);
+        account.setDateOfBirth(null);
+        account.setUrlAvatar(null);
+        account.setLoginWithBioMetric(false);
+        account.setCreated_at(LocalDate.now().toString());
         account.setRole(AccountRole.CUSTOMER);
         account.setAccountTier(AccountTier.TRIAL);
         account.setTrialExpiredAt(LocalDate.now().plusDays(3));
@@ -232,7 +233,7 @@ public class AccountService {
                     newAccount.setProvider(socialType);
                     newAccount.setUrlAvatar(avatar);
                     newAccount.setRole(AccountRole.CUSTOMER);
-                    newAccount.setAccountTier(AccountTier.Free);
+                    newAccount.setAccountTier(AccountTier.FREE);
                     newAccount.setPassword(passwordEncoder.encode(randomPassword));
                     newAccount.setFullName("temp");
                     newAccount.setLoginWithBioMetric(false);
