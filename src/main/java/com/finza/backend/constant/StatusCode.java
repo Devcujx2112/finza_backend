@@ -15,4 +15,6 @@ public class StatusCode {
     public static final int UNSUPPORTED_PROVIDER = 1003;
     public static final int TOKEN_EXPIRED = 1004;
     public static final int PhoneAlreadyExists = 410;
+    public static final int EmailAndPhoneNumberNull = 1004;
+    public static final int EmailIsRegisterInSocial = 1005;
 }
