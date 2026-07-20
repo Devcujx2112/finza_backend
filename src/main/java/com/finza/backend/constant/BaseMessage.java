@@ -28,4 +28,5 @@ public class BaseMessage {
     public static final String EmailAndPhoneNumberNull = "Email hoặc số điện thoại không được để trống";
     public static final String EmailIsNotEXISTED = "Email không tồn tại";
     public static final String SendOtpSuccess = "Gửi otp thành công";
+    public static final String sendOtpFail = "Gửi email thất bại";
 }
