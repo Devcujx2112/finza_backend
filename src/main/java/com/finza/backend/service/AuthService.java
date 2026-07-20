@@ -304,6 +304,16 @@ public class AuthService {
         );
     }
 
+    public void verifyOtp(VerifyOTP request){
+        if (request.getEmail().isEmpty()){
+            throw new AppException(StatusCode.EmailAndPhoneNumberNull,BaseMessage.NOT_NULL_EMAIL);
+        } else if (request.getOtp().isEmpty()){
+            throw new AppException(StatusCode.OTP_NULL, BaseMessage.OTP_NULL);
+        }
+        otpService.verifyOtp(request.getEmail(), request.getOtp());
+
+    }
+
     private void saveRefreshToken(Account account, String refreshToken) {
         Authentication authentication = authenticationRepository
                 .findByAccount_UserId(account.getUserId())

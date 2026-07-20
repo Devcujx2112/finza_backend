@@ -17,4 +17,7 @@ public class StatusCode {
     public static final int PhoneAlreadyExists = 410;
     public static final int EmailAndPhoneNumberNull = 1004;
     public static final int EmailIsRegisterInSocial = 1005;
+    public static final int OTP_EXPIRED = 1006;
+    public static final int OTP_INVALID = 1007;
+    public static final int OTP_NULL = 1008;
 }

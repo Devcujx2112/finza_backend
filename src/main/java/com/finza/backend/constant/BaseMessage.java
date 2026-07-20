@@ -27,6 +27,10 @@ public class BaseMessage {
     public static final String SUCCESS = "Thành công";
     public static final String EmailAndPhoneNumberNull = "Email hoặc số điện thoại không được để trống";
     public static final String EmailIsNotEXISTED = "Email không tồn tại";
-    public static final String SendOtpSuccess = "Gửi otp thành công";
-    public static final String sendOtpFail = "Gửi email thất bại";
+    public static final String SendOtpSuccess = "Gửi OTP thành công";
+    public static final String sendOtpFail = "Gửi OTP thất bại";
+    public static final String OTP_EXPIRED = "Mã OTP đã hết hạn vui lòng gửi lại yêu cầu";
+    public static final String OTP_INVALID = "Mã OTP không trùng khớp vui lòng thử lại";
+    public static final String OTP_NULL = "Mã OTP không được để trống";
+    public static final String VERIFY_OTP_SUCCESS = "Xác thực thành công";
 }

@@ -1,5 +1,8 @@
 package com.finza.backend.service;
 
+import com.finza.backend.constant.BaseMessage;
+import com.finza.backend.constant.StatusCode;
+import com.finza.backend.exception.AppException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,9 +26,14 @@ public class OtpService {
         return String.format("%06d", RANDOM.nextInt(1_000_000));
     }
 
-//    public boolean verifyOtp(String email, String otp) {
-//    }
-//
-//    public void resendOtp(String email) {
-//    }
+    public void verifyOtp(String email, String otp) {
+        String cacheOtp = otpRedisService.getOtp(email);
+        if (cacheOtp == null) {
+            throw new AppException(StatusCode.OTP_EXPIRED, BaseMessage.OTP_EXPIRED);
+        }
+        if (!cacheOtp.equals(otp)) {
+            throw new AppException(StatusCode.OTP_INVALID, BaseMessage.OTP_INVALID);
+        }
+        otpRedisService.deleteOtp(email);
+    }
 }
