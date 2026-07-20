@@ -25,4 +25,7 @@ public class BaseMessage {
     public static final String LOGIN_SOCIAL_SUCCESS = "Đăng nhập bằng social thành công";
     public static final String INVALID_PROVIDER = "Provider không được để trống";
     public static final String SUCCESS = "Thành công";
+    public static final String EmailAndPhoneNumberNull = "Email hoặc số điện thoại không được để trống";
+    public static final String EmailIsNotEXISTED = "Email không tồn tại";
+    public static final String SendOtpSuccess = "Gửi otp thành công";
 }

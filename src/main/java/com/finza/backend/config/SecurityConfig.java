@@ -46,10 +46,12 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         // Không cần token
-                        .requestMatchers("/accounts/register").permitAll()
-                        .requestMatchers("/accounts/login").permitAll()
-                        .requestMatchers("/refresh-token").permitAll()
-                        .requestMatchers("/accounts/login-social").permitAll()
+                        .requestMatchers("/auth/register").permitAll()
+                        .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("/auth/refresh-token").permitAll()
+                        .requestMatchers("/auth/login-social").permitAll()
+                        .requestMatchers("/auth/trial").permitAll()
+                        .requestMatchers("/auth/sendOtp").permitAll()
                         // Còn lại phải có token
                         .anyRequest().authenticated()
                 ).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
