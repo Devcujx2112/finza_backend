@@ -63,7 +63,7 @@ public class AuthController {
         );
     }
 
-    @PostMapping("/sendOtp")
+    @PostMapping("/send-otp")
     public ResponseEntity<BaseResponse<Void>> sendOtp(@RequestBody ForgotPasswordRequest request) {
         authService.forgotPassword(request.getEmail());
         return ResponseEntity.ok(
@@ -71,11 +71,17 @@ public class AuthController {
         );
     }
 
-    @PostMapping("/verifyOtp")
+    @PostMapping("/verify-otp")
     public ResponseEntity<BaseResponse<Void>> verifyOtp(@RequestBody VerifyOTP request) {
         authService.verifyOtp(request);
         return ResponseEntity.ok(
                 BaseResponse.successNullData(new BaseParam<>(null, StatusCode.SUCCESS, BaseMessage.VERIFY_OTP_SUCCESS))
         );
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<BaseResponse<Void>> changePassword(@RequestBody LoginRequest request) {
+        authService.changePassword(request);
+        return ResponseEntity.ok(BaseResponse.successNullData(new BaseParam<>(null, StatusCode.SUCCESS, BaseMessage.ChangePasswordSuccess)));
     }
 }

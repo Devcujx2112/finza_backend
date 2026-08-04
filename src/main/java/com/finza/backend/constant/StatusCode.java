@@ -20,4 +20,5 @@ public class StatusCode {
     public static final int OTP_EXPIRED = 1006;
     public static final int OTP_INVALID = 1007;
     public static final int OTP_NULL = 1008;
+    public static final int PasswordDuplicate = 1009;
 }

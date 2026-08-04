@@ -33,4 +33,7 @@ public class BaseMessage {
     public static final String OTP_INVALID = "Mã OTP không trùng khớp vui lòng thử lại";
     public static final String OTP_NULL = "Mã OTP không được để trống";
     public static final String VERIFY_OTP_SUCCESS = "Xác thực thành công";
+    public static final String EmailAndPasswordCantNull = "Email và password không được để trống";
+    public static final String PASSWORD_SAME_AS_OLD = "Mật khẩu mới không được trùng với mật khẩu cũ";
+    public static final String ChangePasswordSuccess = "Đổi mật khẩu thành công";
 }
