@@ -304,6 +304,28 @@ public class AuthService {
         );
     }
 
+    public void verifyOtp(VerifyOTP request){
+        if (request.getEmail().isEmpty()){
+            throw new AppException(StatusCode.EmailAndPhoneNumberNull,BaseMessage.NOT_NULL_EMAIL);
+        } else if (request.getOtp().isEmpty()){
+            throw new AppException(StatusCode.OTP_NULL, BaseMessage.OTP_NULL);
+        }
+        otpService.verifyOtp(request.getEmail(), request.getOtp());
+    }
+
+    public void changePassword(LoginRequest request){
+        if(request.getEmail().isEmpty() || request.getPassword().isEmpty()){
+            throw new AppException(StatusCode.INTERNAL_SERVER_ERROR, BaseMessage.EmailAndPasswordCantNull);
+        }
+        Account account = accountRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new AppException(StatusCode.EmailNotExists, BaseMessage.ACCOUNT_NOT_FOUND));
+        if (passwordEncoder.matches(request.getPassword(), account.getPassword())) {
+            throw new AppException(StatusCode.PasswordDuplicate, BaseMessage.PASSWORD_SAME_AS_OLD);
+        }
+        account.setPassword(passwordEncoder.encode(request.getPassword()));
+        accountRepository.save(account);
+    }
+
     private void saveRefreshToken(Account account, String refreshToken) {
         Authentication authentication = authenticationRepository
                 .findByAccount_UserId(account.getUserId())

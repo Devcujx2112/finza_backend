@@ -2,11 +2,7 @@ package com.finza.backend.controller;
 
 import com.finza.backend.constant.BaseMessage;
 import com.finza.backend.constant.StatusCode;
-import com.finza.backend.dto.request.AccountRequest;
-import com.finza.backend.dto.request.ForgotPasswordRequest;
-import com.finza.backend.dto.request.LoginRequest;
-import com.finza.backend.dto.request.RefreshTokenRequest;
-import com.finza.backend.dto.request.SocialLogin;
+import com.finza.backend.dto.request.*;
 import com.finza.backend.dto.response.AccountResponse;
 import com.finza.backend.dto.response.AuthResponse;
 import com.finza.backend.dto.response.BaseParam;
@@ -67,11 +63,25 @@ public class AuthController {
         );
     }
 
-    @PostMapping("/sendOtp")
+    @PostMapping("/send-otp")
     public ResponseEntity<BaseResponse<Void>> sendOtp(@RequestBody ForgotPasswordRequest request) {
         authService.forgotPassword(request.getEmail());
         return ResponseEntity.ok(
                 BaseResponse.successNullData(new BaseParam<>(null, StatusCode.SUCCESS, BaseMessage.SendOtpSuccess))
         );
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<BaseResponse<Void>> verifyOtp(@RequestBody VerifyOTP request) {
+        authService.verifyOtp(request);
+        return ResponseEntity.ok(
+                BaseResponse.successNullData(new BaseParam<>(null, StatusCode.SUCCESS, BaseMessage.VERIFY_OTP_SUCCESS))
+        );
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<BaseResponse<Void>> changePassword(@RequestBody LoginRequest request) {
+        authService.changePassword(request);
+        return ResponseEntity.ok(BaseResponse.successNullData(new BaseParam<>(null, StatusCode.SUCCESS, BaseMessage.ChangePasswordSuccess)));
     }
 }
