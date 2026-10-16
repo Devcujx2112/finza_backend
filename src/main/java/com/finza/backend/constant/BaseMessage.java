@@ -36,4 +36,14 @@ public class BaseMessage {
     public static final String EmailAndPasswordCantNull = "Email và password không được để trống";
     public static final String PASSWORD_SAME_AS_OLD = "Mật khẩu mới không được trùng với mật khẩu cũ";
     public static final String ChangePasswordSuccess = "Đổi mật khẩu thành công";
+    // Onboarding setup
+    public static final String REQUEST_NULL = "Dữ liệu gửi lên không được để trống";
+    public static final String SPENDING_METHOD_NULL = "Vui lòng chọn cách quản lý chi tiêu";
+    public static final String DAY_STARTED_INVALID = "Ngày bắt đầu chu kỳ phải từ 1 đến 31";
+    public static final String TOTAL_INCOME_INVALID = "Tổng thu nhập không được để trống và phải lớn hơn hoặc bằng 0";
+    public static final String MONTHLY_SAVING_INVALID = "Mục tiêu tiết kiệm phải lớn hơn hoặc bằng 0";
+    public static final String MONTHLY_SAVING_OVER_INCOME = "Mục tiêu tiết kiệm không được lớn hơn tổng thu nhập";
+    public static final String SETUP_SPENDING_CONFIG_SUCCESS = "Thiết lập chi tiêu thành công";
+    public static final String SPENDING_CONFIG_NOT_FOUND = "Chưa thiết lập cấu hình chi tiêu";
+    public static final String UNAUTHORIZED = "Bạn chưa đăng nhập hoặc token không hợp lệ";
 }
