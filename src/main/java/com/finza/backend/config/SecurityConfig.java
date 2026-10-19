@@ -29,11 +29,17 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return username -> accountRepository.findByEmail(username)
-                .map(account -> org.springframework.security.core.userdetails.User
-                        .withUsername(account.getEmail())
-                        .password(account.getPassword())
-                        .roles(account.getRole().name())
-                        .build())
+                .map(account -> {
+                    String password = account.getPassword() != null
+                            ? account.getPassword()
+                            : "{noop}SOCIAL_LOGIN_ONLY";
+
+                    return org.springframework.security.core.userdetails.User
+                            .withUsername(account.getEmail())
+                            .password(password)
+                            .roles(account.getRole().name())
+                            .build();
+                })
                 .orElseThrow(() -> new RuntimeException(BaseMessage.ACCOUNT_NOT_FOUND));
     }
 
